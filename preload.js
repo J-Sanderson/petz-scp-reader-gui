@@ -7,3 +7,7 @@ contextBridge.exposeInMainWorld(
       }
     }
   )
+
+  ipcRenderer.on('parsed-data', function (event, data) {
+    document.getElementById('output').innerText = JSON.stringify(data)
+  });

@@ -89,10 +89,10 @@ ipcMain.on('ondialogopen', (event) => {
                 .string('copyright', {
                     zeroTerminated: true,
                 });
-            const script = scriptParser.parse(data);
+            const script = scriptParser.parse(data)
 
-            let results = parseResults(header, actions, scriptDwords, script);
-            
+            let results = parseResults(header, actions, scriptDwords, script)
+            event.reply('parsed-data', results)
         })
     })
 })
