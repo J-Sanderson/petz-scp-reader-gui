@@ -34,6 +34,10 @@ ipcMain.on('ondialogopen', (event) => {
             { name: 'SCPs', extensions: ['scp'] }
         ]
     }).then((result) => {
+        const file = result.filePaths[0]
+        const extension = path.extname(file)
+        const fileName = path.basename(file, extension)
+
         fs.readFile(result.filePaths[0], (err, data) => {
             if (err) throw err
             const headerParser = new Parser()
@@ -91,14 +95,15 @@ ipcMain.on('ondialogopen', (event) => {
                 });
             const script = scriptParser.parse(data)
 
-            let results = parseResults(header, actions, scriptDwords, script)
+            let results = parseResults(fileName, header, actions, scriptDwords, script)
             event.reply('parsed-data', results)
         })
     })
 })
 
-parseResults = (header, actions, scriptDwords, script) => {
+parseResults = (fileName, header, actions, scriptDwords, script) => {
     return {
+        fileName: `${fileName}.scp`,
         header: {
             numAnimations: header.animations,
             unknownValue: header.unknown,
