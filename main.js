@@ -111,7 +111,7 @@ parseResults = (fileName, header, actions, scriptDwords, script) => {
         },
         actions: parseActions(actions),
         scripts: {
-            dwordCount: scriptDwords,
+            dwordCount: scriptDwords.dwordCount,
             scripts: parseScripts(script)
         }
     }
