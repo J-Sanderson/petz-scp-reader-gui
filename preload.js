@@ -21,7 +21,7 @@ contextBridge.exposeInMainWorld(
 
       <h3>SCRIPTS</h3>
       <p>Number of script dwords: ${data.scripts.dwordCount}</p>
-      <p>TODO</p>
+      ${formatScripts(data.scripts.scripts)}
     `
   });
 
@@ -38,4 +38,23 @@ formatActions = (actions) => {
       </p>
     `
   }).join('')
+}
+
+formatScripts = (scripts) => {
+  return scripts.map(script => {
+    return `
+      <p>Script start position: ${script.startPosition}<br />
+      Script dword count: ${script.dwordCount}<br />
+      Commands:<br/>
+      ${formatCommands(script.commands)}
+      </p>
+    `
+  }).join('')
+}
+
+formatCommands = (commands) => {
+  //TODO indent and better format
+  return commands.map(command => {
+    return command.join(' ')
+  }).join('<br />')
 }
