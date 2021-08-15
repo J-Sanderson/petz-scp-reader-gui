@@ -53,8 +53,29 @@ formatScripts = (scripts) => {
 }
 
 formatCommands = (commands) => {
-  //TODO indent and better format
+  let tabDepth = 0;
   return commands.map(command => {
-    return command.join(' ')
+    if (endsBlock.includes(command[0])) tabDepth--
+    const str = `${tab(tabDepth)}${command[0]}: ${command.slice(1).join(', ')}`
+    if (startsBlock.includes(command[0])) tabDepth++
+    return str
   }).join('<br />')
 }
+
+function tab(depth) {
+  return depth <= 0 ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth)
+}
+
+const startsBlock = [
+  '55: startBlockLoop1',
+  '56: startBlockCallback2',
+  '57: startBlockChance1',
+  '58: startBlockDialogSynch0',
+  '59: startBlockElse0',
+  '5A startBlockListen0',
+];
+
+const endsBlock = [
+  '11: endBlock0',
+  '12: endBlockAlign0',
+];
