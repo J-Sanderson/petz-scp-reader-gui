@@ -101,6 +101,10 @@ ipcMain.on('ondialogopen', (event) => {
     })
 })
 
+ipcMain.on('onopenexport', (event) => {
+    dialog.showSaveDialog()
+})
+
 parseResults = (fileName, header, actions, scriptDwords, script) => {
     return {
         fileName: `${fileName}.scp`,

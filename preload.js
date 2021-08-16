@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld(
     'electron', {  
       openDialog: () => {
         ipcRenderer.send('ondialogopen')
+      },
+      openExport: () => {
+        ipcRenderer.send('onopenexport')
       }
     }
   )
@@ -23,6 +26,7 @@ contextBridge.exposeInMainWorld(
       <p>Number of script dwords: ${data.scripts.dwordCount}</p>
       ${formatScripts(data.scripts.scripts)}
     `
+    document.getElementById('export').removeAttribute('disabled')
   });
 
 formatActions = (actions) => {
