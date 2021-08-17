@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron')
+let currentSCP;
 
 contextBridge.exposeInMainWorld(
     'electron', {  
@@ -6,14 +7,15 @@ contextBridge.exposeInMainWorld(
         ipcRenderer.send('ondialogopen')
       },
       openExport: () => {
-        ipcRenderer.send('onopenexport')
+        ipcRenderer.send('onopenexport', [currentSCP])
       }
     }
   )
 
   ipcRenderer.on('parsed-data', function (event, data) {
+    currentSCP = data;
     document.getElementById('output').innerHTML = `
-      <h2>${data.fileName}</h2>
+      <h2>${data.fileName}.scp</h2>
       <h3>HEADER</h3>
       <p>Number of animations: ${data.header.numAnimations}<br />
       Unknown value: ${data.header.unknownValue}<br />

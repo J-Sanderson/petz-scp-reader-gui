@@ -101,13 +101,22 @@ ipcMain.on('ondialogopen', (event) => {
     })
 })
 
-ipcMain.on('onopenexport', (event) => {
-    dialog.showSaveDialog()
+ipcMain.on('onopenexport', (event, args) => {
+    data = args[0]
+    dialog.showSaveDialog({
+        defaultPath: `${data.fileName}.txt`,
+    })
+        .then(result => {
+            fs.writeFile(result.filePath, JSON.stringify(data), (err) => {
+                if (err) throw err;
+                console.log('done')
+            })
+        })
 })
 
 parseResults = (fileName, header, actions, scriptDwords, script) => {
     return {
-        fileName: `${fileName}.scp`,
+        fileName: `${fileName}`,
         header: {
             numAnimations: header.animations,
             unknownValue: header.unknown,
