@@ -1,4 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron')
+
+const { startsBlock, endsBlock } = require('./data/data')
+
 let currentSCP;
 
 contextBridge.exposeInMainWorld(
@@ -71,17 +74,3 @@ formatCommands = (commands) => {
 function tab(depth) {
   return depth <= 0 ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth)
 }
-
-const startsBlock = [
-  '55: startBlockLoop1',
-  '56: startBlockCallback2',
-  '57: startBlockChance1',
-  '58: startBlockDialogSynch0',
-  '59: startBlockElse0',
-  '5A startBlockListen0',
-];
-
-const endsBlock = [
-  '11: endBlock0',
-  '12: endBlockAlign0',
-];
