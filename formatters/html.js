@@ -54,7 +54,7 @@ formatCommands = (commands) => {
     if (startsBlock.includes(command[0])) tabDepth++
     return str
   }).join('<br />')
-},
+}
 
 tab = (depth) => {
   return depth <= 0 ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth)

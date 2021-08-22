@@ -3,6 +3,7 @@ const path = require('path')
 const fs = require('fs')
 
 const { parseScp } = require('./parsers/scp')
+const { formatText } = require('./formatters/text')
 
 function createWindow () {
     const win = new BrowserWindow({
@@ -52,7 +53,7 @@ ipcMain.on('onopenexport', (event, args) => {
     dialog.showSaveDialog({
         defaultPath: `${data.fileName}.txt`,
     }).then(result => {
-        fs.writeFile(result.filePath, JSON.stringify(data), (err) => {
+        fs.writeFile(result.filePath, formatText(data), (err) => {
             if (err) throw err;
             console.log('done')
         })
