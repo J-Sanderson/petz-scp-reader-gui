@@ -55,7 +55,7 @@ ipcMain.on('onopenexport', (event, args) => {
     }).then(result => {
         fs.writeFile(result.filePath, formatText(data), (err) => {
             if (err) throw err;
-            console.log('done')
+            dialog.showMessageBox(null, { message: `Successfully exported to ${result.filePath}` })
         })
     })
 })
