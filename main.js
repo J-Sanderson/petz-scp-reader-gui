@@ -36,15 +36,17 @@ ipcMain.on('ondialogopen', (event) => {
             { name: 'SCPs', extensions: ['scp'] }
         ]
     }).then((result) => {
-        const file = result.filePaths[0]
-        const extension = path.extname(file)
-        const fileName = path.basename(file, extension)
+        if (!result.canceled) {
+            const file = result.filePaths[0]
+            const extension = path.extname(file)
+            const fileName = path.basename(file, extension)
 
-        fs.readFile(result.filePaths[0], (err, data) => {
-            if (err) throw err
-            let results = parseScp(fileName, data)
-            event.reply('parsed-data', results)
-        })
+            fs.readFile(result.filePaths[0], (err, data) => {
+                if (err) throw err
+                let results = parseScp(fileName, data)
+                event.reply('parsed-data', results)
+            })
+        }
     })
 })
 
@@ -53,9 +55,11 @@ ipcMain.on('onopenexport', (event, args) => {
     dialog.showSaveDialog({
         defaultPath: `${data.fileName}.txt`,
     }).then(result => {
-        fs.writeFile(result.filePath, formatText(data), (err) => {
-            if (err) throw err;
-            dialog.showMessageBox(null, { message: `Successfully exported to ${result.filePath}` })
-        })
+        if (!result.canceled) {
+            fs.writeFile(result.filePath, formatText(data), (err) => {
+                if (err) throw err;
+                dialog.showMessageBox(null, { message: `Successfully exported to ${result.filePath}` })
+            })
+        }
     })
 })
