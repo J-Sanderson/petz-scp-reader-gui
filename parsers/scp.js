@@ -4,62 +4,72 @@ const { scpVerbs, fudgers, cueCodes, callsFudger } = require('../data/data')
 
 module.exports = {
     parseScp: (fileName, file) => {
-        const headerParser = new Parser()
-            .endianess('little')
-            .string('copyright', {
-                zeroTerminated: true,
-            })
-            .uint32('animations')
-            .uint32('unknown')
-            .skip(8)
-            .uint32('actions')
-        const header = headerParser.parse(file)
+        try {
+            const headerParser = new Parser()
+                .endianess('little')
+                .string('copyright', {
+                    zeroTerminated: true,
+                })
+                .uint32('animations')
+                .uint32('unknown')
+                .skip(8)
+                .uint32('actions')
+            const header = headerParser.parse(file)
 
-        const individualActionParser = new Parser()
-            .endianess('little')
-            .uint32('actionID')
-            .uint32('numScripts')
-            .uint32('animation1')
-            .uint32('animation2')
-            .skip(4)
-            .uint16('unknown')
-            .uint16('sameAnimationModifier')
-            .skip(4)
-            .uint32('script')
-        const actionParser = new Parser()
-            .endianess('little')
-            .skip(82) //skip header
-            .array('actions', {
-                type: individualActionParser,
-                length: header.actions
-            })
-        const actions = actionParser.parse(file)
+            const individualActionParser = new Parser()
+                .endianess('little')
+                .uint32('actionID')
+                .uint32('numScripts')
+                .uint32('animation1')
+                .uint32('animation2')
+                .skip(4)
+                .uint16('unknown')
+                .uint16('sameAnimationModifier')
+                .skip(4)
+                .uint32('script')
+            const actionParser = new Parser()
+                .endianess('little')
+                .skip(82) //skip header
+                .array('actions', {
+                    type: individualActionParser,
+                    length: header.actions
+                })
+            const actions = actionParser.parse(file)
 
-        const scriptDwordParser = new Parser()
-            .endianess('little')
-            .skip(82 + (header.actions * 32)) //skip header and actions
-            .uint32('dwordCount')
-        const scriptDwords = scriptDwordParser.parse(file)
+            const scriptDwordParser = new Parser()
+                .endianess('little')
+                .skip(82 + (header.actions * 32)) //skip header and actions
+                .uint32('dwordCount')
+            const scriptDwords = scriptDwordParser.parse(file)
 
-        const dwordParser = new Parser()
-            .endianess('little')
-            .array('bytes', {
-                type: "uint8",
-                length: 4,
-            });
-        const scriptParser = new Parser()
-            .endianess('little')
-            .skip(82 + (header.actions * 32) + 4) //skip header, actions, dword count
-            .array('dwords', {
-                type: dwordParser,
-                length: scriptDwords.dwordCount,
-            })
-            .string('copyright', {
-                zeroTerminated: true,
-            });
-        const script = scriptParser.parse(file)
+            const dwordParser = new Parser()
+                .endianess('little')
+                .array('bytes', {
+                    type: "uint8",
+                    length: 4,
+                });
+            const scriptParser = new Parser()
+                .endianess('little')
+                .skip(82 + (header.actions * 32) + 4) //skip header, actions, dword count
+                .array('dwords', {
+                    type: dwordParser,
+                    length: scriptDwords.dwordCount,
+                })
+                .string('copyright', {
+                    zeroTerminated: true,
+                });
+            const script = scriptParser.parse(file)
 
-        return parseResults(fileName, header, actions, scriptDwords, script)
+            const parsed = parseResults(fileName, header, actions, scriptDwords, script)
+
+            return {
+                success: true,
+                parsed,
+            }
+        }
+        catch(err) {
+            return { success: false }
+        }
     }
 }
 

@@ -44,7 +44,11 @@ ipcMain.on('ondialogopen', (event) => {
             fs.readFile(result.filePaths[0], (err, data) => {
                 if (err) throw err
                 let results = parseScp(fileName, data)
-                event.reply('parsed-data', results)
+                if (results.success) {
+                    event.reply('parsed-data', results.parsed)
+                } else {
+                    dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
+                }
             })
         }
     })
