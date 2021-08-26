@@ -4,15 +4,18 @@ module.exports = {
   formatHtml: (data) => {
     return `
       <h2>${data.fileName}.scp</h2>
-      <h3>HEADER</h3>
+      <h3 id="header">HEADER</h3>
+      <p>Skip to: Header | <a href="#actions">Actions</a> | <a href="#scripts">Scripts</a></p>
       <p>Number of animations: ${data.header.numAnimations}<br />
       Unknown value: ${data.header.unknownValue}<br />
       Number of actions: ${data.header.numActions}</p>
 
-      <h3>ACTIONS</h3>
+      <h3 id="actions">ACTIONS</h3>
+      <p>Skip to: <a href="#header">Header</a> | Actions | <a href="#scripts">Scripts</a></p>
       ${formatActions(data.actions)}
 
-      <h3>SCRIPTS</h3>
+      <h3 id="scripts">SCRIPTS</h3>
+      <p>Skip to: <a href="#header">Header</a> | <a href="#actions">Actions</a> | Scripts</p>
       <p>Number of script dwords: ${data.scripts.dwordCount}</p>
       ${formatScripts(data.scripts.scripts)}
     `
