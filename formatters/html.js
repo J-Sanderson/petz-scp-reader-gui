@@ -31,7 +31,7 @@ formatActions = (actions) => {
       End animation: ${action.endAnimation}<br />
       Unknown value: ${action.unknownValue}<br />
       Same animation modifier: ${action.sameAnimationModifier}<br />
-      Script start point: ${action.scriptStart}
+      Script start point: <a href="#script-${action.scriptStart}">${action.scriptStart}</a>
       </p>
     `
   }).join('')
@@ -40,7 +40,7 @@ formatActions = (actions) => {
 formatScripts = (scripts) => {
   return scripts.map(script => {
     return `
-      <p>Script start position: ${script.startPosition}<br />
+      <p id="script-${script.startPosition}">Script start position: ${script.startPosition}<br />
       Script dword count: ${script.dwordCount}<br />
       Commands:<br/>
       ${formatCommands(script.commands)}
