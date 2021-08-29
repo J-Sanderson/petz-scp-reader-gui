@@ -1,0 +1,48 @@
+:root {
+    --white: #fff;
+    --black: rgb(21, 21, 27);
+    --grey: rgb(85, 89, 97);
+    --blue: rgb(59, 101, 216);
+}
+
+body {
+    background: var(--white);
+    color: var(--black);
+    font-family: sans-serif;
+    padding: 10px 20px;
+}
+
+a {
+    color: var(--blue);
+}
+
+button {
+    background: var(--blue);
+    color: var(--white);
+    border: 0;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+hr {
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--grey);
+}
+
+.backdrop {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    opacity: 0.2;
+}
+
+#output {
+    width: calc(100% - 171px);
+}
