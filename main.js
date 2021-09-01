@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, dialog } = require('electron')
+const { app, ipcMain, BrowserWindow, Menu, MenuItem, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -16,6 +16,23 @@ function createWindow () {
 
     win.loadFile('index.html')
 }
+
+const template = [
+    {
+        role: 'window',
+        submenu: [
+           {
+              role: 'minimize'
+           },
+           {
+              role: 'close'
+           }
+        ]
+    },
+]
+
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
 
 app.whenReady().then(() => {
     createWindow()
