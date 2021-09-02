@@ -19,4 +19,4 @@ ipcRenderer.on('parsed-data', function (event, data) {
   currentSCP = data
   document.getElementById('output').innerHTML = formatHtml(data)
   document.getElementById('export').removeAttribute('disabled')
-});
+})

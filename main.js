@@ -5,8 +5,10 @@ const fs = require('fs')
 const { parseScp } = require('./parsers/scp')
 const { formatText } = require('./formatters/text')
 
+let win;
+
 function createWindow () {
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
@@ -18,6 +20,18 @@ function createWindow () {
 }
 
 const template = [
+    {
+        label: 'File',
+        submenu: [
+            {
+                label: 'Select',
+                click: () => app.emit('selectFile'),
+            },
+            {
+                label: 'Export'
+            }
+        ],
+    },
     {
         role: 'window',
         submenu: [
@@ -44,6 +58,31 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
+})
+
+app.on('selectFile', () => {
+    dialog.showOpenDialog({ 
+        properties: ['openFile'],
+        filters: [
+            { name: 'SCPs', extensions: ['scp'] }
+        ]
+    }).then((result) => {
+        if (!result.canceled) {
+            const file = result.filePaths[0]
+            const extension = path.extname(file)
+            const fileName = path.basename(file, extension)
+
+            fs.readFile(result.filePaths[0], (err, data) => {
+                if (err) throw err
+                let results = parseScp(fileName, data)
+                if (results.success) {
+                    win.webContents.send('parsed-data', results.parsed)
+                } else {
+                    dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
+                }
+            })
+        }
+    })
 })
 
 ipcMain.on('ondialogopen', (event) => {
@@ -84,3 +123,7 @@ ipcMain.on('onopenexport', (event, args) => {
         }
     })
 })
+
+getParsedSCP = () => {
+    
+}
