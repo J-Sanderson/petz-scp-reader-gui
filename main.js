@@ -28,7 +28,10 @@ const template = [
                 click: () => app.emit('selectFile'),
             },
             {
-                label: 'Export'
+                label: 'Export',
+                enabled: false,
+                id: 'export',
+                click: () => app.emit('exportFile'),
             }
         ],
     },
@@ -76,6 +79,7 @@ app.on('selectFile', () => {
                 if (err) throw err
                 let results = parseScp(fileName, data)
                 if (results.success) {
+                    Menu.getApplicationMenu().getMenuItemById('export').enabled = true
                     win.webContents.send('parsed-data', results.parsed)
                 } else {
                     dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
@@ -101,6 +105,7 @@ ipcMain.on('ondialogopen', (event) => {
                 if (err) throw err
                 let results = parseScp(fileName, data)
                 if (results.success) {
+                    Menu.getApplicationMenu().getMenuItemById('export').enabled = true
                     event.reply('parsed-data', results.parsed)
                 } else {
                     dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
@@ -123,7 +128,3 @@ ipcMain.on('onopenexport', (event, args) => {
         }
     })
 })
-
-getParsedSCP = () => {
-    
-}
