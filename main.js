@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, Menu, MenuItem, dialog } = require('electron')
+const { app, ipcMain, BrowserWindow, Menu, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -6,6 +6,7 @@ const { parseScp } = require('./parsers/scp')
 const { formatText } = require('./formatters/text')
 
 let win;
+let currentSCP;
 
 function createWindow () {
     win = new BrowserWindow({
@@ -79,6 +80,7 @@ app.on('selectFile', () => {
                 if (err) throw err
                 let results = parseScp(fileName, data)
                 if (results.success) {
+                    currentSCP = results.parsed
                     Menu.getApplicationMenu().getMenuItemById('export').enabled = true
                     win.webContents.send('parsed-data', results.parsed)
                 } else {
@@ -105,6 +107,7 @@ ipcMain.on('ondialogopen', (event) => {
                 if (err) throw err
                 let results = parseScp(fileName, data)
                 if (results.success) {
+                    currentSCP = results.parsed
                     Menu.getApplicationMenu().getMenuItemById('export').enabled = true
                     event.reply('parsed-data', results.parsed)
                 } else {
@@ -115,13 +118,16 @@ ipcMain.on('ondialogopen', (event) => {
     })
 })
 
-ipcMain.on('onopenexport', (event, args) => {
-    data = args[0]
+ipcMain.on('onopenexport', () => {
+    if (!currentSCP) {
+        dialog.showErrorBox('Error exporting SCP', 'No SCP file loaded. Select a valid .scp file and try again.')
+        return
+    }
     dialog.showSaveDialog({
-        defaultPath: `${data.fileName}.txt`,
+        defaultPath: `${currentSCP.fileName}.txt`,
     }).then(result => {
         if (!result.canceled) {
-            fs.writeFile(result.filePath, formatText(data), (err) => {
+            fs.writeFile(result.filePath, formatText(currentSCP), (err) => {
                 if (err) throw err;
                 dialog.showMessageBox(null, { message: `Successfully exported to ${result.filePath}` })
             })
