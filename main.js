@@ -118,24 +118,11 @@ ipcMain.on('ondialogopen', (event) => {
     })
 })
 
-app.on('exportFile', () => {
-    if (!currentSCP) {
-        dialog.showErrorBox('Error exporting SCP', 'No SCP file loaded. Select a valid .scp file and try again.')
-        return
-    }
-    dialog.showSaveDialog({
-        defaultPath: `${currentSCP.fileName}.txt`,
-    }).then(result => {
-        if (!result.canceled) {
-            fs.writeFile(result.filePath, formatText(currentSCP), (err) => {
-                if (err) throw err;
-                dialog.showMessageBox(null, { message: `Successfully exported to ${result.filePath}` })
-            })
-        }
-    })
-})
+app.on('exportFile', () => exportText())
 
-ipcMain.on('onopenexport', () => {
+ipcMain.on('onopenexport', () => exportText())
+
+const exportText = () => {
     if (!currentSCP) {
         dialog.showErrorBox('Error exporting SCP', 'No SCP file loaded. Select a valid .scp file and try again.')
         return
@@ -150,4 +137,4 @@ ipcMain.on('onopenexport', () => {
             })
         }
     })
-})
+}
