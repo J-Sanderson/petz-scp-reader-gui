@@ -64,63 +64,42 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
 })
 
-app.on('selectFile', () => {
-    dialog.showOpenDialog({ 
-        properties: ['openFile'],
-        filters: [
-            { name: 'SCPs', extensions: ['scp'] }
-        ]
-    }).then((result) => {
-        if (!result.canceled) {
-            const file = result.filePaths[0]
-            const extension = path.extname(file)
-            const fileName = path.basename(file, extension)
-
-            fs.readFile(result.filePaths[0], (err, data) => {
-                if (err) throw err
-                let results = parseScp(fileName, data)
-                if (results.success) {
-                    currentSCP = results.parsed
-                    Menu.getApplicationMenu().getMenuItemById('export').enabled = true
-                    win.webContents.send('parsed-data', results.parsed)
-                } else {
-                    dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
-                }
-            })
-        }
-    })
-})
-
-ipcMain.on('ondialogopen', (event) => {
-    dialog.showOpenDialog({ 
-        properties: ['openFile'],
-        filters: [
-            { name: 'SCPs', extensions: ['scp'] }
-        ]
-    }).then((result) => {
-        if (!result.canceled) {
-            const file = result.filePaths[0]
-            const extension = path.extname(file)
-            const fileName = path.basename(file, extension)
-
-            fs.readFile(result.filePaths[0], (err, data) => {
-                if (err) throw err
-                let results = parseScp(fileName, data)
-                if (results.success) {
-                    currentSCP = results.parsed
-                    Menu.getApplicationMenu().getMenuItemById('export').enabled = true
-                    event.reply('parsed-data', results.parsed)
-                } else {
-                    dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
-                }
-            })
-        }
-    })
-})
+app.on('selectFile', () => importScp())
+ipcMain.on('ondialogopen', (event) => importScp(event))
 
 app.on('exportFile', () => exportText())
-
 ipcMain.on('onopenexport', () => exportText())
+
+const importScp = (event) => {
+    dialog.showOpenDialog({ 
+        properties: ['openFile'],
+        filters: [
+            { name: 'SCPs', extensions: ['scp'] }
+        ]
+    }).then((result) => {
+        if (!result.canceled) {
+            const file = result.filePaths[0]
+            const extension = path.extname(file)
+            const fileName = path.basename(file, extension)
+
+            fs.readFile(result.filePaths[0], (err, data) => {
+                if (err) throw err
+                let results = parseScp(fileName, data)
+                if (results.success) {
+                    currentSCP = results.parsed
+                    Menu.getApplicationMenu().getMenuItemById('export').enabled = true
+                    if (event) {
+                        event.reply('parsed-data', results.parsed)
+                    } else {
+                        win.webContents.send('parsed-data', results.parsed)
+                    }
+                } else {
+                    dialog.showErrorBox('Error parsing SCP', 'Could not parse the given file. Check that this is a valid .scp file and try again.')
+                }
+            })
+        }
+    })
+}
 
 const exportText = () => {
     if (!currentSCP) {
