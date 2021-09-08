@@ -1,79 +1,77 @@
 const Parser = require('binary-parser').Parser
 
-const { scpVerbs, fudgers, cueCodes, callsFudger } = require('../data/data')
+const { scpVerbs, fudgers, cueCodes, callsFudger } = require('../data/scpTables')
 
-module.exports = {
-    parseScp: (fileName, file) => {
-        try {
-            const headerParser = new Parser()
-                .endianess('little')
-                .string('copyright', {
-                    zeroTerminated: true,
-                })
-                .uint32('animations')
-                .uint32('unknown')
-                .skip(8)
-                .uint32('actions')
-            const header = headerParser.parse(file)
+module.exports = (fileName, file) => {
+    try {
+        const headerParser = new Parser()
+            .endianess('little')
+            .string('copyright', {
+                zeroTerminated: true,
+            })
+            .uint32('animations')
+            .uint32('unknown')
+            .skip(8)
+            .uint32('actions')
+        const header = headerParser.parse(file)
 
-            const individualActionParser = new Parser()
-                .endianess('little')
-                .uint32('actionID')
-                .uint32('numScripts')
-                .uint32('animation1')
-                .uint32('animation2')
-                .skip(4)
-                .uint16('unknown')
-                .uint16('sameAnimationModifier')
-                .skip(4)
-                .uint32('script')
-            const actionParser = new Parser()
-                .endianess('little')
-                .skip(82) //skip header
-                .array('actions', {
-                    type: individualActionParser,
-                    length: header.actions
-                })
-            const actions = actionParser.parse(file)
+        const individualActionParser = new Parser()
+            .endianess('little')
+            .uint32('actionID')
+            .uint32('numScripts')
+            .uint32('animation1')
+            .uint32('animation2')
+            .skip(4)
+            .uint16('unknown')
+            .uint16('sameAnimationModifier')
+            .skip(4)
+            .uint32('script')
+        const actionParser = new Parser()
+            .endianess('little')
+            .skip(82) //skip header
+            .array('actions', {
+                type: individualActionParser,
+                length: header.actions
+            })
+        const actions = actionParser.parse(file)
 
-            const scriptDwordParser = new Parser()
-                .endianess('little')
-                .skip(82 + (header.actions * 32)) //skip header and actions
-                .uint32('dwordCount')
-            const scriptDwords = scriptDwordParser.parse(file)
+        const scriptDwordParser = new Parser()
+            .endianess('little')
+            .skip(82 + (header.actions * 32)) //skip header and actions
+            .uint32('dwordCount')
+        const scriptDwords = scriptDwordParser.parse(file)
 
-            const dwordParser = new Parser()
-                .endianess('little')
-                .array('bytes', {
-                    type: "uint8",
-                    length: 4,
-                });
-            const scriptParser = new Parser()
-                .endianess('little')
-                .skip(82 + (header.actions * 32) + 4) //skip header, actions, dword count
-                .array('dwords', {
-                    type: dwordParser,
-                    length: scriptDwords.dwordCount,
-                })
-                .string('copyright', {
-                    zeroTerminated: true,
-                });
-            const script = scriptParser.parse(file)
+        const dwordParser = new Parser()
+            .endianess('little')
+            .array('bytes', {
+                type: "uint8",
+                length: 4,
+            });
+        const scriptParser = new Parser()
+            .endianess('little')
+            .skip(82 + (header.actions * 32) + 4) //skip header, actions, dword count
+            .array('dwords', {
+                type: dwordParser,
+                length: scriptDwords.dwordCount,
+            })
+            .string('copyright', {
+                zeroTerminated: true,
+            });
+        const script = scriptParser.parse(file)
 
-            const parsed = parseResults(fileName, header, actions, scriptDwords, script)
+        const parsed = parseResults(fileName, header, actions, scriptDwords, script)
 
-            return {
-                success: true,
-                parsed,
-            }
+        return {
+            success: true,
+            parsed,
         }
-        catch(err) {
-            return { success: false }
-        }
+    }
+    catch(err) {
+        return { success: false }
     }
 }
 
-parseResults = (fileName, header, actions, scriptDwords, script) => {
+const parseResults = (fileName, header, actions, scriptDwords, script) => {
     return {
         fileName: `${fileName}`,
         header: {
@@ -89,7 +87,7 @@ parseResults = (fileName, header, actions, scriptDwords, script) => {
     }
 }
 
-parseActions = (actions) => {
+const parseActions = (actions) => {
     return actions.actions.map(action => {
         return {
             id: action.actionID,
@@ -103,7 +101,7 @@ parseActions = (actions) => {
     })
 }
 
-parseScripts = (script) => {
+const parseScripts = (script) => {
     const scriptEnd = 99
     let chunkedScripts = []
 
@@ -128,7 +126,7 @@ parseScripts = (script) => {
     })
 }
 
-parseIndividualScript = (script) => {
+const parseIndividualScript = (script) => {
     const commandEnd = 64
     let chunkedCommands = []
 
@@ -179,12 +177,11 @@ parseIndividualScript = (script) => {
         return list
     })
 }
-
-function toHexString(value) {
+const toHexString = (value) => {
     return leftPad(value.toString(16).toUpperCase());
 }
 
-function leftPad(string) {
+const leftPad = (string) => {
     if (string.length === 1) {
         string = `0${string}`;
     }

@@ -1,35 +1,33 @@
-const { startsBlock, endsBlock } = require('../data/data')
+const { startsBlock, endsBlock } = require('../data/scpTables')
 
-module.exports = {
-  formatHtml: (data) => {
-    return `
-      <h2>${data.fileName}.scp</h2>
+module.exports = (data) => {
+  return `
+    <h2>${data.fileName}.scp</h2>
 
-      <hr/>
+    <hr/>
 
-      <h3 id="header">HEADER</h3>
-      <p>Skip to: Header | <a href="#actions">Actions</a> | <a href="#scripts">Scripts</a></p>
-      <p>Number of animations: ${data.header.numAnimations}<br />
-      Unknown value: ${data.header.unknownValue}<br />
-      Number of actions: ${data.header.numActions}</p>
+    <h3 id="header">HEADER</h3>
+    <p>Skip to: Header | <a href="#actions">Actions</a> | <a href="#scripts">Scripts</a></p>
+    <p>Number of animations: ${data.header.numAnimations}<br />
+    Unknown value: ${data.header.unknownValue}<br />
+    Number of actions: ${data.header.numActions}</p>
 
-      <hr/>
+    <hr/>
 
-      <h3 id="actions">ACTIONS</h3>
-      <p>Skip to: <a href="#header">Header</a> | Actions | <a href="#scripts">Scripts</a></p>
-      ${formatActions(data.actions)}
+    <h3 id="actions">ACTIONS</h3>
+    <p>Skip to: <a href="#header">Header</a> | Actions | <a href="#scripts">Scripts</a></p>
+    ${formatActions(data.actions)}
 
-      <hr/>
+    <hr/>
 
-      <h3 id="scripts">SCRIPTS</h3>
-      <p>Skip to: <a href="#header">Header</a> | <a href="#actions">Actions</a> | Scripts</p>
-      <p>Number of script dwords: ${data.scripts.dwordCount}</p>
-      ${formatScripts(data.scripts.scripts)}
-    `
-  }
+    <h3 id="scripts">SCRIPTS</h3>
+    <p>Skip to: <a href="#header">Header</a> | <a href="#actions">Actions</a> | Scripts</p>
+    <p>Number of script dwords: ${data.scripts.dwordCount}</p>
+    ${formatScripts(data.scripts.scripts)}
+  `
 }
 
-formatActions = (actions) => {
+const formatActions = (actions) => {
   return actions.map(action => {
     return `
       <p>ID: ${action.id}<br />
@@ -44,7 +42,7 @@ formatActions = (actions) => {
   }).join('')
 }
 
-formatScripts = (scripts) => {
+const formatScripts = (scripts) => {
   return scripts.map(script => {
     return `
       <p id="script-${script.startPosition}">Script start position: ${script.startPosition}<br />
@@ -56,7 +54,7 @@ formatScripts = (scripts) => {
   }).join('')
 }
 
-formatCommands = (commands) => {
+const formatCommands = (commands) => {
   let tabDepth = 0;
   return commands.map(command => {
     if (endsBlock.includes(command[0])) tabDepth--
@@ -66,6 +64,6 @@ formatCommands = (commands) => {
   }).join('<br />')
 }
 
-tab = (depth) => {
+const tab = (depth) => {
   return depth <= 0 ? '' : '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(depth)
 }

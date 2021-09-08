@@ -2,13 +2,14 @@ const { app, ipcMain, BrowserWindow, Menu, dialog } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
-const { parseScp } = require('./parsers/scp')
-const { formatText } = require('./formatters/text')
+const template = require('./data/menu')
+const parseScp = require('./parsers/scp')
+const formatText = require('./formatters/text')
 
 let win;
 let currentSCP;
 
-function createWindow () {
+const createWindow = () => {
     win = new BrowserWindow({
         width: 800,
         height: 600,
@@ -19,35 +20,6 @@ function createWindow () {
 
     win.loadFile('index.html')
 }
-
-const template = [
-    {
-        label: 'File',
-        submenu: [
-            {
-                label: 'Select',
-                click: () => app.emit('selectFile'),
-            },
-            {
-                label: 'Export',
-                enabled: false,
-                id: 'export',
-                click: () => app.emit('exportFile'),
-            }
-        ],
-    },
-    {
-        role: 'window',
-        submenu: [
-           {
-              role: 'minimize'
-           },
-           {
-              role: 'close'
-           }
-        ]
-    },
-]
 
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)

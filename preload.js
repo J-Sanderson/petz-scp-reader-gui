@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
-const { formatHtml } = require('./formatters/html')
+const formatHtml = require('./formatters/html')
 
 contextBridge.exposeInMainWorld(
   'electron', {  

@@ -1,7 +1,6 @@
-const { startsBlock, endsBlock } = require('../data/data')
+const { startsBlock, endsBlock } = require('../data/scpTables')
 
-module.exports = {
-    formatText: (data) => {
+module.exports = (data) => {
         return `
 ${data.fileName}.scp output:
 
@@ -19,10 +18,10 @@ ACTIONS${formatActions(data.actions)}
 SCRIPTS:
 Number of script dwords: ${data.scripts.dwordCount}
 ${formatScripts(data.scripts.scripts)}`
-    }
 }
 
-formatActions = (actions) => {
+
+const formatActions = (actions) => {
     return actions.map(action => {
       return `
 ID: ${action.id}
@@ -36,7 +35,7 @@ Script start point: ${action.scriptStart}
     }).join('')
 }
 
-formatScripts = (scripts) => {
+const formatScripts = (scripts) => {
     return scripts.map(script => {
       return `
 Script start position: ${script.startPosition}
@@ -47,7 +46,7 @@ ${formatCommands(script.commands)}
     }).join('')
 }
 
-formatCommands = (commands) => {
+const formatCommands = (commands) => {
     let tabDepth = 0;
     return commands.map(command => {
       if (endsBlock.includes(command[0])) tabDepth--
@@ -57,6 +56,6 @@ formatCommands = (commands) => {
     }).join('\n')
 }
 
-tab = (depth) => {
+const tab = (depth) => {
     return depth <= 0 ? '' : '\t'.repeat(depth)
 }
